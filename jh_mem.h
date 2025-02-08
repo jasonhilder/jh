@@ -42,6 +42,15 @@ struct Arena {
 	usize   data_len;
 	usize   prev_offset;
 	usize   curr_offset;
+	// TODO
+	// u8      growable;
+};
+
+typedef struct Temp_Arena_Memory Temp_Arena_Memory;
+struct Temp_Arena_Memory {
+	Arena *arena;
+	size_t prev_offset;
+	size_t curr_offset;
 };
 
 u8 is_power_of_two(uptr x);
@@ -53,6 +62,7 @@ void *arena_alloc(Arena *a, usize size);
 void *arena_resize_align(Arena *a, void *old_memory, usize old_size, usize new_size, usize align);
 void *arena_resize(Arena *a, void *old_memory, usize old_size, usize new_size);
 
+// TODO
 // arena_grow();
 
 // Free the allocated arena
@@ -66,6 +76,11 @@ void arena_reset(Arena *arena);
 // On malloc fail it will return the arena with data as NULL 
 // REQUIRED to arena.data after used
 Arena arena_new(usize arena_init_size);
+
+// Temp arena using the passed arena instance
+Temp_Arena_Memory temp_arena_memory_begin(Arena *a);
+// Clear the temp arena
+void temp_arena_memory_end(Temp_Arena_Memory temp);
 
 // -------------------------------------- 
 // -------------------------------------- 
@@ -171,6 +186,19 @@ void arena_free(Arena* arena) {
         free(arena->data);
         arena->data = NULL;
     }
+}
+
+Temp_Arena_Memory temp_arena_memory_begin(Arena *a) {
+	Temp_Arena_Memory temp;
+	temp.arena = a;
+	temp.prev_offset = a->prev_offset;
+	temp.curr_offset = a->curr_offset;
+	return temp;
+}
+
+void temp_arena_memory_end(Temp_Arena_Memory temp) {
+	temp.arena->prev_offset = temp.prev_offset;
+	temp.arena->curr_offset = temp.curr_offset;
 }
 
 Arena arena_new(usize arena_init_size) {

@@ -4,18 +4,38 @@ Heavily inspired and designed from:
 * https://github.com/nothings/stb/
 * https://github.com/gingerBill/gb/
 
-This is a single header file with things I reach for often
+This is a single header file that contains:
+- consistent type defintions 
+- useful macros
+- comparison functions
+- array helpers
 
-To use this library, do this in *one* C or C++ file:
+To use this library, do this in *one* C:
 	#define JH_IMPLEMENTATION
 	#include "jh.h"
 
 */
 
-#ifndef JH_INCLUDE_JH_H
-#define JH_INCLUDE_JH_H
+#ifndef JH_INCLUDED
+#define JH_INCLUDED
 
-int jh_read_file_to_buffer(char* file_path, char** out_buffer, int add_terminator);
+typedef uint8_t   u8;
+typedef uint16_t  u16;
+typedef uint32_t  u32;
+typedef uint64_t  u64;
+
+typedef char      i8;
+typedef int16_t   i32;
+typedef int32_t   i32;
+typedef float     f32;
+typedef double    f64;
+typedef char      byte;
+typedef char16_t  c16;
+
+typedef uintptr_t uptr;
+typedef ptrdiff_t size;
+typedef size_t    usize;
+
 void jh_sort_int_array(int* array, size_t arrlen, const char* order);
 
 // -------------------------------------- 
@@ -43,6 +63,10 @@ void jh_sort_int_array(int* array, size_t arrlen, const char* order);
     _a < _b ? _a : _b;       \
 })
 
+#define countof(a)    (size)(sizeof(a) / sizeof(*(a)))
+#define lengthof(s)   (countof(s) - 1)
+#define assert(c)  while (!(c)) __builtin_unreachable()
+
 // -------------------------------------- 
 // Comparison helpers:
 // -------------------------------------- 
@@ -53,62 +77,6 @@ static inline int int_compare_asc(const void* a, const void* b) {
 
 static inline int int_compare_desc(const void* a, const void* b) {
     return (*(int*)b - *(int*)a);
-}
-
-// -------------------------------------- 
-// FILE I/O helpers:
-// -------------------------------------- 
-
-// Takes file path and a buffer which will get reallocated to the full file size. 
-// Note: buffer still needs to be manually free'd
-int hf_read_file_to_buffer(char* file_path, char** out_buffer, int add_terminator)
-{
-    FILE *file = fopen(file_path, "rb");
-    if(file == NULL)
-    {
-        perror("Failed to open file.");
-        return -1;
-    }
-
-    fseek(file, 0L, SEEK_END);
-    long file_size = ftell(file);
-    if (file_size == -1)
-    {
-        perror("Failed to determine file size");
-        fclose(file);
-        return -1;
-    }
-    rewind(file);
-
-    // Reallocate memory for the buffer, check if realloc is successful
-    // Realloc with extra space if terminator is needed
-    char *buffer = realloc(*out_buffer, file_size + (add_terminator ? 1 : 0));
-    if (buffer == NULL)
-    {
-        perror("Memory allocation failed");
-        fclose(file);
-        return -1;
-    }
-
-    // Update the pointer to the newly allocated buffer
-    *out_buffer = buffer; 
-
-    size_t bytes_read = fread(*out_buffer, 1, file_size, file);
-    if (bytes_read != file_size)
-    {
-        perror("Error reading file");
-        fclose(file);
-        return -1;
-    }
-
-    // Add null terminator if needed
-    if (add_terminator == 1)
-    {
-        (*out_buffer)[file_size] = '\0';
-    }
-
-    fclose(file);
-    return 0;
 }
 
 // -------------------------------------- 
@@ -143,4 +111,4 @@ void jh_sort_int_array(int* array, size_t arrlen, const char* order) {
 }
 
 #endif /* JH_H_IMPLEMENTATION */
-#endif /* JH_INCLUDE_JH_H */
+#endif /* JH_INCLUDED */

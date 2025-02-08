@@ -43,7 +43,7 @@ void jh_sort_int_array(int* array, size_t arrlen, const char* order);
 // implementation Below
 // -------------------------------------- 
 
-#ifdef JH_H_IMPLEMENTATION
+#ifdef JH_IMPLEMENTATION
 
 // -------------------------------------- 
 // Macros:

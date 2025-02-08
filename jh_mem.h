@@ -46,8 +46,14 @@ struct Arena {
 
 u8 is_power_of_two(uptr x);
 uptr align_forward(uptr ptr, usize align);
+
 void *arena_alloc_align(Arena *a, usize size, usize align);
 void *arena_alloc(Arena *a, usize size);
+
+void *arena_resize_align(Arena *a, void *old_memory, usize old_size, usize new_size, usize align);
+void *arena_resize(Arena *a, void *old_memory, usize old_size, usize new_size);
+
+// arena_grow();
 
 // Free the allocated arena
 void arena_free(Arena *arena);
@@ -119,6 +125,39 @@ void *arena_alloc_align(Arena *a, usize size, usize align) {
 
 void *arena_alloc(Arena *a, usize size) {
 	return arena_alloc_align(a, size, DEFAULT_ALIGNMENT);
+}
+
+void *arena_resize_align(Arena *a, void *old_memory, usize old_size, usize new_size, usize align) {
+	u8 *old_mem = (u8 *)old_memory;
+
+	assert(is_power_of_two(align));
+
+	if (old_mem == NULL || old_size == 0) {
+		return arena_alloc_align(a, new_size, align);
+	} else if (a->data <= old_mem && old_mem < a->data + a->data_len) {
+
+		if (a->data + a->prev_offset == old_mem) {
+			a->curr_offset = a->prev_offset + new_size;
+			if (new_size > old_size) {
+				memset(&a->data[a->curr_offset], 0, new_size - old_size);
+			}
+			return old_memory;
+		} else {
+			void *new_memory = arena_alloc_align(a, new_size, align);
+			usize copy_size = old_szie < new_size ? old_size : new_size;
+			// Copy old to new memory
+			memmove(new_memory, old_memory, copy_size);
+			return new_memory;
+		}
+
+	} else {
+		assert(0 && "Memory is out of bounds of the buffer in this arena");
+		return NULL;
+	}
+} 
+
+void *arena_resize(Arena *a, void *old_memory, size_t old_size, size_t new_size) {
+	return arena_resize_align(a, old_memory, old_size, new_size, DEFAULT_ALIGNMENT);
 }
 
 void arena_reset(Arena *arena) {

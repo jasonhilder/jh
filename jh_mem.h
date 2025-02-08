@@ -33,6 +33,7 @@ And will require jh.h as it uses the typedefs defined in that file.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 typedef struct Arena Arena;
@@ -103,7 +104,7 @@ void *arena_alloc_align(Arena *a, usize size, usize align) {
 	offset -= (uptr)a->data;
 
 	if (offset+size <= a->data_len) {
-		void *ptr = &a->buf[offset];
+		void *ptr = &a->data[offset];
 		a->prev_offset = offset;
 		a->curr_offset = offset+size;
 

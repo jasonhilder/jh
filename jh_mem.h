@@ -49,11 +49,11 @@ void *arena_alloc_align(Arena *a, usize size, usize align);
 void *arena_alloc(Arena *a, usize size);
 
 // Free the allocated arena
-void arena_free(&Arena arena);
+void arena_free(Arena &arena);
 
 // "clears" the arena by placing the offset to the beggining.
 // Allowing reuse of arena without having to free/alloc.
-void arena_reset(&Arena arena);
+void arena_reset(Arena &arena);
 
 // Initializes an arena instance. 
 // On malloc fail it will return the arena with data as NULL 

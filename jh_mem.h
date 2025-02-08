@@ -144,7 +144,8 @@ void *arena_resize_align(Arena *a, void *old_memory, usize old_size, usize new_s
 			return old_memory;
 		} else {
 			void *new_memory = arena_alloc_align(a, new_size, align);
-			usize copy_size = old_szie < new_size ? old_size : new_size;
+			usize copy_size = old_size < new_size ? old_size : new_size;
+
 			// Copy old to new memory
 			memmove(new_memory, old_memory, copy_size);
 			return new_memory;

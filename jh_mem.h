@@ -35,6 +35,7 @@ And will require jh.h as it uses the typedefs defined in that file.
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include "jh.h"
 
 typedef struct Arena Arena;
 struct Arena {
@@ -87,6 +88,7 @@ void temp_arena_memory_end(Temp_Arena_Memory temp);
 // implementation Below
 // -------------------------------------- 
 
+#ifdef JH_MEM_IMPLEMENTATION
 
 // -------------------------------------- 
 // Arena Functions Start
@@ -220,4 +222,5 @@ Arena arena_new(usize arena_init_size) {
 // Arena Functions END
 // -------------------------------------- 
 
+#endif 
 #endif

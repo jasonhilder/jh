@@ -20,6 +20,7 @@ To use this library, do this in *one* C:
 #define JH_INCLUDED
 
 #include <stdio.h>
+#include <stdint.h>
 
 typedef uint8_t   byte;
 typedef uint8_t   u8;
@@ -86,8 +87,8 @@ static inline int int_compare_desc(const void* a, const void* b) {
 /*
    Sorts an integer array in ascending or descending order.
    
-   This function uses the `qsort` function to sort an array of integers either
-   in ascending or descending order, based on the provided `order` argument.
+   This function uses the `qsort` function to sort an array of integers either.
+   In ascending or descending order, based on the provided `order` argument.
    The comparison is done using the standard integer comparison logic.
    
    @param array Pointer to the integer array to be sorted.
